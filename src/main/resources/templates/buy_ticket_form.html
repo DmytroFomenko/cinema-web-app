@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- ISO-8859-1 -->
+    <meta charset="utf-8">
+    <title>Main page</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+</head>
+<body>
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+        <!-- Brand -->
+        <a class="navbar-brand" href="/">На головну</a>
+
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <div class="container">
+        <span th:text="${film.name}"></span><br>
+    </div>
+
+<!-- Buttons of places -->
+    <div th:each="ticket: ${tickets}">
+        <form th:action="@{/select_ticket}" method="POST" style="float:left" >
+            <input type="hidden" name="ticketId" th:value="${ticket.id}">
+<!--                 <button type="submit" class="btn btn-primary" th:style="|background-color: ${ticket.getColorByStatus()}; color: black|"> -->
+            <button type="submit" class="btn btn-primary"
+                th:style="|background-color: ${ticket.getColorByStatus()}; color: black; ${ticket.clientId == loggedUser.id ? 'border-color: #0026e3; border-width: 5px' : ''} |">
+                <span th:text="${placeServ.findPlaceById(ticket.placeId).number}"/><br>
+                <span th:text="${placeKindServ.findPlaceKindById(placeServ.findPlaceById(ticket.placeId).placeKindId).name}"/><br>
+                <span th:text="${#numbers.formatDecimal((placeKindServ.findPlaceKindById(placeServ.findPlaceById(ticket.placeId).placeKindId).addPrice + seancePrice), 1, 'NONE', 2, 'COMMA')}"/>грн
+            </button>
+        </form>
+    </div>
+
+    <div th:marginheight="50px" style="clear: both"> </div>
+
+    <div>
+<!--      class="table table-sm table-striped table-bordered"     -->
+    <table border="1" style="text-align: center">
+        <thead>
+            <tr>
+                <th>Назва послуги</th>
+                <th>Ціна<br>послуги,<br>грн</th>
+                <span th:each="ticket: ${reservedTickets}">
+                    <th th:text="${placeServ.findPlaceById(ticket.placeId).number}"/>
+                </span>
+            </tr>
+        </thead>
+
+        <tbody>
+            <span th:each="service: ${availableServices}">
+                <tr>
+                    <td th:text="${service.name}" style="text-align: left"/>
+                    <td th:text="${#numbers.formatDecimal(service.price, 1, 'NONE', 2, 'COMMA')}"/>
+                    <span th:each="ticket: ${reservedTickets}">
+                        <td>
+                            <form th:action="@{/select_ticket_service}" method="POST" style="float:left" >
+                                <input type="hidden" name="ticketId" th:value="${ticket.id}">
+                                <input type="hidden" name="serviceId" th:value="${service.id}">
+<!--                                 <button type="submit" class="btn btn-primary" th:style="|background-color: ${ticket.getColorByStatus()}; color: black; ${ticket.clientId == loggedUser.id ? 'border-color: #0026e3; border-width: 5px' : ''} |"> -->
+                                <button type="submit" class="btn btn-primary" th:style="|${ticketServiceServ.existsTicketServiceByTicketIdAndServiceId(ticket.id, service.id) ? 'background-color: green' : 'background-color: white'}|">
+                                </button>
+                            </form>
+                        </td>
+                    </span>
+                </tr>
+            </span>
+        </tbody>
+
+    </table>
+    </div>
+
+    <div>
+        Загальна ціна: <span th:text="${#numbers.formatDecimal(totalPrice, 1, 'NONE', 2, 'COMMA')}"/>грн
+    </div>
+
+    <div th:if="${totalPrice > 0}">
+        <form th:action="@{/buy_tickets}" method="POST">
+            <input type="hidden" name="totalPrice" th:value="${totalPrice}">
+            <input type="hidden" name="seanceId" th:value="${seanceId}">
+            <button type="submit" class="btn btn-primary">
+                Купити
+            </button>
+        </form>
+    </div>
+
+
+</body>
+</html>

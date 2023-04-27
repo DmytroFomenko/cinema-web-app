@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- ISO-8859-1 -->
+    <meta charset="utf-8">
+    <title>Main page</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+</head>
+<body>
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+        <!-- Brand -->
+        <a class="navbar-brand" href="/">
+            <span th:if="${loggedUser != null}">
+                <span th:text="${loggedUser.nickname}"></span>
+            </span>
+            <span th:if="${loggedUser == null}">
+                Головна
+            </span>
+            <span th:if="${loggedUser == null}">
+                <a th:href="@{/login_user_form}" class="btn btn-primary">
+                    Увійти
+                </a>
+            </span>
+            <span th:if="${loggedUser != null}">
+                <a th:href="@{/logout_user}" class="btn btn-primary">
+                    Вийти
+                </a>
+            </span>
+        </a>
+
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+<div class="container">
+
+
+    <div th:if="${boughtTickets != null}">
+        <table border="1" style="text-align: center">
+            <thead>
+            <tr>
+                <th> Час</th>
+                <th> Фільм</th>
+                <th> Місце</th>
+                <th> Код квитка</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="tick : ${boughtTickets}">
+                <td th:text="${#dates.format(seanceServ.findSeanceById(tick.seanceId).beginTime, 'HH:mm / dd.MM.yy')}"/>
+                <td th:text="${filmServ.findFilmById(seanceServ.findSeanceById(tick.seanceId).filmId).name}"/>
+                <td th:text="${placeServ.findPlaceById(tick.placeId).number}"/>
+                <td th:text="${tick.code}"/>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+    <table class="table table-sm table-striped table-bordered">
+        <tbody>
+            <tr th:each="seance: ${seances}">
+                <td th:text="${filmServ.findFilmById(seance.filmId).imageName}"/>
+                <td>
+                    <span th:text="${filmServ.findFilmById(seance.filmId).name}"></span><br>
+                    Дата: <span th:text="${#dates.format(seance.beginTime, 'dd.MM.yy')}"></span><br>
+                    Час початку: <span th:text="${#dates.format(seance.beginTime, 'HH:mm')}"></span><br>
+                    Базова ціна: <span th:text="${#numbers.formatDecimal(seance.basePrice, 1, 'NONE', 2, 'COMMA')}"></span> грн
+                </td>
+                <td>
+                    <form th:action="@{/more_info}" method="GET">
+                        <input type="hidden" name="seanceId" th:value="${seance.id}"/>
+                        <button type="submit" class="btn btn-primary">
+                            Детальніше
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+
+</div>
+</body>
+</html>

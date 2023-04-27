@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="uk">
+<head>
+  <!-- ISO-8859-1 -->
+  <meta charset="utf-8">
+  <title>Main page</title>
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+  <!-- Brand -->
+  <a class="navbar-brand" href="/">На головну</a>
+
+  <!-- Toggler/collapsibe Button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+</nav>
+
+
+
+<div class="container" style="color:red; text-align: center" >
+        <span th:if="${error != null}">
+             <span th:text="${error}"></span>
+        </span>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+      <h1 class="text-center"> Вхід в акаунт </h1>
+      <div class="card-body">
+        <form th:action="@{/signup_client}" th:object="${clientToSignUpData}" method="POST">
+          <div class="form-group">
+            <label>Нікнейм:</label>
+            <input required
+                   type="text"
+                   name="nickname"
+                   th:field="*{nickname}"
+                   class="form-control"
+                   placeholder= "Введіть ваш нікнейм"
+                   pattern="[\p{IsLatin}\p{IsCyrillic}' ]{1,20}"
+                   title="Обов'язкоіе поле, латиниця або кирилиця, максимум - 20 символів"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Пароль:</label>
+            <input required
+                   type="password"
+                   name="password"
+                   th:field="*{password}"
+                   class="form-control"
+                   placeholder="Введіть ваш пароль"
+                   pattern="[\p{IsLatin}\p{IsCyrillic}' ]{1,20}"
+                   title="Обов'язкове поле, латиниця або кирилиця, максимум - 20 символів"
+            />
+          </div>
+
+          <div class="box-footer">
+            <button type="submit" class="btn btn-primary">
+              Готово
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</body>
+</html>

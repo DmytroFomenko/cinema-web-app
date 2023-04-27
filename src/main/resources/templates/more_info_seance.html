@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- ISO-8859-1 -->
+    <meta charset="utf-8">
+    <title>Main page</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+</head>
+<body>
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+        <!-- Brand -->
+        <a class="navbar-brand" href="/">На головну</a>
+
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+<div class="container">
+    <span th:text="${film.imageName}"></span>
+    <span th:text="${film.name}"></span><br>
+    Дата сеансу: <span th:text="${#dates.format(seance.beginTime, 'dd.MM.yy')}"></span><br>
+    Час сеансу: <span th:text="${#dates.format(seance.beginTime, 'HH:mm')}"></span>
+     - <span th:text="${#dates.format(seance.calcEndTime(film.duration), 'HH:mm')}"></span><br>
+    Базова ціна: <span th:text="${#numbers.formatDecimal(seance.basePrice, 1, 'NONE', 2, 'COMMA')}"></span> грн<br>
+    Тривалість: <span th:text="${#numbers.formatInteger(film.duration.getHour(), 1)}"></span> год.
+    <span th:text="${#numbers.formatInteger(film.duration.getMinute(), 2)}"></span> хв.<br>
+    <span th:text="${film.description}"></span><br><br>
+
+    <span th:if="${loggedUser == null}">
+        Бажаєте купити квиток? Будь ласка, увійдіть в акаунт!
+        <a th:href="@{/login_user_form}" class="btn btn-primary">
+            Увійти
+        </a>
+    </span>
+    <form th:action="@{/buy_ticket_form}" method="GET">
+        <input type="hidden" name="seanceId" th:value="${seance.id}">
+        <span th:if="${loggedUser != null}">
+            <span th:if="${loggedUser.roleId == clientRoleId}">
+                <button type="submit" class="btn btn-primary">
+                    Перейти до купівлі квитка
+                </button>
+            </span>
+        </span>
+    </form>
+
+
+
+
+
+</div>
+</body>
+</html>
