@@ -1,81 +1,124 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="uk">
-<head>
-  <!-- ISO-8859-1 -->
-  <meta charset="utf-8">
-  <title>Main page</title>
-  <link rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-        crossorigin="anonymous">
-</head>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageSignUpAdminTitle})}"></head>
+
 <body>
-<nav class="navbar navbar-expand-md bg-dark navbar-dark">
-  <!-- Brand -->
-  <a class="navbar-brand" href="/">На головну</a>
 
-    <!-- Toggler/collapsibe Button -->
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-</nav>
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = true,
+                                                      page_title = #{pageSignUpAdminTitle},
+                                                      current_dropitem_no = '_')}"></div>
 
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+  <div class = "row">
+    <div class = "col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+      <h1 class = "text-center m-3 mb-4"
+          th:text = "#{pageSignUpAdminTitle}"></h1>
 
+      <div class = "card-body">
 
-<div class="container" style="color:red; text-align: center">
-        <span th:if="${error != null}">
-             <span th:text="${error}"></span>
-        </span>
-</div>
+        <form action = "#" method = "POST"
+              th:action = "@{/signup_admin}"
+              th:object = "${enteredLoginData}">
 
-<div class="container">
-  <div class="row">
-    <div class="col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
-      <h1 class="text-center"> Вхід в акаунт </h1>
-      <div class="card-body">
-        <form th:action="@{/signup_admin}" th:object="${adminToSignUpData}" method="POST">
-          <div class="form-group">
-            <label>Нікнейм:</label>
-            <input required
-                   type="text"
-                   name="nickname"
-                   th:field="*{nickname}"
-                   class="form-control"
-                   placeholder="Введіть ваш нікнейм"
-                   pattern="[\p{IsLatin}\p{IsCyrillic}' ]{1,20}"
-                   title="Обов'язкоіе поле, латиниця або кирилиця, максимум - 20 символів"
+          <div class = "form-group">
+            <label for = "email"
+                   th:text = "#{emailAdminLabel}"> </label>
+            <input class = "form-control"
+                   required
+                   type = "email"
+                   id = "email"
+                   th:field = "*{email}"
+                   th:pattern = "${@environment.getProperty('email-admin-pattern')}"
+                   th:placeholder = "#{emailAdminPlaceholder}"
+                   th:title = "#{emailAdminTitle}"
             />
           </div>
-
-          <div class="form-group">
-            <label>Пароль:</label>
-            <input required
-                   type="password"
-                   name="password"
-                   th:field="*{password}"
-                   class="form-control"
-                   placeholder="Введіть ваш пароль"
-                   pattern="[\p{IsLatin}\p{IsCyrillic}' ]{1,20}"
-                   title="Обов'язкове поле, латиниця або кирилиця, максимум - 20 символів"
-            />
-          </div>
-
-          <div class="form-group">
-            <label>Ключ адміністратора:</label>
-            <input required
-                   type="password"
-                   name="adminKey"
-                   class="form-control"
-                   placeholder="Введіть Ключ адміністратора"
-                   pattern=".+"
-                   title="Ключ адміністратора"
-            />
-          </div>
-
-          <div class="box-footer">
-            <button type="submit" class="btn btn-primary">
-              Готово
+          <div class = "box-footer">
+            <button class = "btn btn-primary"
+                    type = "submit"
+                    formnovalidate
+                    name = "role"
+                    value = "admin"
+                    th:formaction = "@{/send_admin_email_code}"
+                    th:formmethod = "POST">
+              <span th:if = "${session.sentCodeText == null}"
+                    th:text = "#{buttonSendConfirmationCode}"/>
+              <span th:if = "${session.sentCodeText != null}"
+                    th:text = "#{buttonResendConfirmationCode}"/>
             </button>
+          </div>
+
+          <div th:if = "${session.sentCodeText != null}">
+            <div class = "form-group">
+              <label for = "confirmCodeText"
+                     th:text = "#{confirmCodeLabel}">
+              </label>
+              <input autocomplete = "off"
+                     class = "form-control"
+                     id = "confirmCodeText"
+                     name = "confirmCodeText"
+                     required
+                     th:placeholder = "#{confirmCodePlaceholder}"
+                     th:title = "#{confirmCodeTitle}"
+                     th:value = "${confirmCodeText}"
+                     type = "text"
+              />
+            </div>
+<!--            <div class = "form-group">-->
+<!--              <label for = "nickname"-->
+<!--                     th:utext = "#{nicknameLabel}">-->
+<!--              </label>-->
+<!--              <input class = "form-control"-->
+<!--                     required-->
+<!--                     type = "text"-->
+<!--                     id = "nickname"-->
+<!--                     th:field = "*{nickname}"-->
+<!--                     th:pattern = "${@environment.getProperty('nickname-reg-pattern')}"-->
+<!--                     th:placeholder = "#{nicknamePlaceholder}"-->
+<!--                     th:title = "#{nicknameTitle(${@environment.getProperty('nickname-min-length')},-->
+<!--                                                    ${@environment.getProperty('nickname-max-length')})}"-->
+<!--              />-->
+<!--            </div>-->
+            <div class = "form-group">
+              <label for = "password"
+                     th:text = "#{passwordLabel}">
+              </label>
+              <input required
+                     class = "form-control"
+                     type = "password"
+                     id = "password"
+                     name = "password"
+                     th:pattern = "${@environment.getProperty('password-reg-pattern')}"
+                     th:placeholder = "#{passwordPlaceholder}"
+                     th:title = "#{passwordRegTitle(${@environment.getProperty('password-min-length')},
+                                                    ${@environment.getProperty('password-max-length')})}"
+                     value = ""
+              />
+            </div>
+            <div class = "form-group">
+              <label for = "password2"
+                     th:text = "#{password2Label}">
+              </label>
+              <input class = "form-control"
+                     type = "password"
+                     required
+                     id = "password2"
+                     name = "password2"
+                     th:pattern = "${@environment.getProperty('password-reg-pattern')}"
+                     th:placeholder = "#{password2Placeholder}"
+                     th:title = "#{passwordRegTitle(${@environment.getProperty('password-min-length')},
+                                                    ${@environment.getProperty('password-max-length')})}"
+                     value = ""
+              />
+            </div>
+            <div class = "box-footer">
+              <button class = "btn btn-primary"
+                      type = "submit"
+                      th:text = "#{buttonSubmitRegistration}"
+              />
+            </div>
           </div>
 
         </form>
@@ -83,8 +126,7 @@
       </div>
     </div>
   </div>
+
 </div>
-
-
 </body>
 </html>

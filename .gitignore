@@ -35,5 +35,4 @@ build/
 *.log
 *.jar
 *.jar.original
-*.*~
-*~.*
+*~*.*~*
